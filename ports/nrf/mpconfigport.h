@@ -344,7 +344,9 @@
 // for instruction access.  So convert addresses to make them executable.
 #define MICROPY_PERSISTENT_CODE_TRACK_FUN_DATA (1)
 #define MICROPY_PERSISTENT_CODE_TRACK_BSS_RODATA (0)
-#define MICROPY_MAKE_POINTER_CALLABLE(p) ((void *)(((uintptr_t)(p) - 0x20000000 + 0x00800000) | 1))
+// Only RAM addresses need translating: frozen native code lives in flash and
+// is already executable at its own address.
+#define MICROPY_MAKE_POINTER_CALLABLE(p) ((void *)((((uintptr_t)(p) >= 0x20000000) ? ((uintptr_t)(p) - 0x20000000 + 0x00800000) : (uintptr_t)(p)) | 1))
 void *nrf_native_code_commit(void *, unsigned int, void *);
 #define MP_PLAT_COMMIT_EXEC(buf, len, reloc) nrf_native_code_commit(buf, len, reloc)
 #else

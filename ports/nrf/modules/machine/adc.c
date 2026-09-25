@@ -34,6 +34,12 @@
     #include "nrfx_adc.h"
 #else
     #include "nrfx_saadc.h"
+
+// Acquisition time for single-ended sampling.  Boards that measure through a
+// high impedance divider (e.g. a battery sense network) need a longer time.
+#ifndef MICROPY_HW_SAADC_ACQTIME
+#define MICROPY_HW_SAADC_ACQTIME NRF_SAADC_ACQTIME_3US
+#endif
 #endif
 
 typedef struct _machine_adc_obj_t {
@@ -132,7 +138,7 @@ static mp_obj_t mp_machine_adc_make_new(const mp_obj_type_t *type, size_t n_args
             .resistor_n = NRF_SAADC_RESISTOR_DISABLED,
             .gain = NRF_SAADC_GAIN1_4,
             .reference = NRF_SAADC_REFERENCE_VDD4,
-            .acq_time = NRF_SAADC_ACQTIME_3US,
+            .acq_time = MICROPY_HW_SAADC_ACQTIME,
             .mode = NRF_SAADC_MODE_SINGLE_ENDED,
             .burst = NRF_SAADC_BURST_DISABLED,
         },
@@ -257,7 +263,7 @@ mp_obj_t machine_adc_battery_level(void) {
             .resistor_n = NRF_SAADC_RESISTOR_DISABLED,
             .gain = NRF_SAADC_GAIN1_6,
             .reference = NRF_SAADC_REFERENCE_INTERNAL,
-            .acq_time = NRF_SAADC_ACQTIME_3US,
+            .acq_time = MICROPY_HW_SAADC_ACQTIME,
             .mode = NRF_SAADC_MODE_SINGLE_ENDED,
             .burst = NRF_SAADC_BURST_DISABLED,
         },
